@@ -46,7 +46,7 @@ class PeriodTracker:
             self.bot.reply_to(message, "Please enter your cycle length in days (e.g., 28).")
             self.bot.register_next_step_handler(message, self.process_cycle_length)
 
-        @self.bot.message_handler(commands=['last_period'])
+        @self.bot.message_handler(commands=['enter_last_period'])
         def update_last_period(message):
             user_id = message.from_user.id
             self.user_data[user_id]['waiting_for_cycle_length'] = False  # Reset the flag
@@ -229,31 +229,6 @@ class PeriodTracker:
         """Predict ovulation date (typically 14 days before next period)."""
         next_period = self._predict_next_period(user_id)
         return next_period - datetime.timedelta(days=14)
-
-    def start_periodic_notifications(self):
-        """Start background task for periodic notifications."""
-        while True:
-            # Check for upcoming periods and send notifications
-            for user_id, data in self.user_data.items():
-                try:
-                    next_period = self._predict_next_period(user_id)
-                    days_until_period = (next_period - datetime.date.today()).days
-                    
-                    # Send notification 3 days before period
-                    if days_until_period == 3:
-                        self.bot.send_message(user_id, 
-                            "🩸 Hey Fatemeh! Your period is expected in 3 days. "
-                            "Be prepared and take care of yourself! 💕")
-                    
-                    # Some random supportive notifications
-                    if days_until_period % 7 == 0:  # Every week
-                        self._send_supportive_notification(user_id)
-                
-                except Exception as e:
-                    print(f"Error sending notification: {e}")
-            
-            # Wait for a day before checking again
-            time.sleep(86400)  # 24 hours
     
     def save_user_name(self, message):
         user_id = message.from_user.id
