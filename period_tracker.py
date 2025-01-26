@@ -5,6 +5,7 @@ import time
 import telebot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 import threading
+import argparse
 
 class PeriodTracker:
     def __init__(self, bot_token: str):
@@ -310,6 +311,9 @@ class PeriodTracker:
 
 # Usage
 if __name__ == '__main__':
-    BOT_TOKEN = 'YOUR_BOT_TOKEN'
-    tracker = PeriodTracker(BOT_TOKEN)
+    parser = argparse.ArgumentParser(description='Period Tracker Bot')
+    parser.add_argument('--token', required=True, help='Telegram bot token')
+    args = parser.parse_args()
+    
+    tracker = PeriodTracker(args.token)
     tracker.run()
